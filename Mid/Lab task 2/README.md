@@ -1,140 +1,218 @@
-Product Management API
-
-Student Information
-
-Name: Amir Hamza
-Student ID: 23-54816-3
-Section: D
-Course: Advanced Web Technology
-Lab Task: Lab Task 1
+Lab Task 2: NestJS, TypeORM and PostgreSQL
 
 Project Overview
 
-Product Management API is a RESTful API developed using NestJS, TypeScript, TypeORM, and PostgreSQL. It provides CRUD (Create, Read, Update, Delete) operations for managing products and employees.
+This project is developed as part of the Advanced Web Technology course lab assignment. It demonstrates how to build RESTful APIs using NestJS, TypeORM, and PostgreSQL.
+
+The application manages three types of data: Products, Employees, and Categories. It supports creating and retrieving records, database migrations, and request validation using DTOs.
 
 Technologies Used
 
-- Node.js
-- NestJS
-- TypeScript
-- TypeORM
-- PostgreSQL
-- Docker
-- Postman
-- DBeaver
+- NestJS : Backend application framework
+- TypeScript : Programming language
+- TypeORM : Object-relational mapping and database migrations
+- PostgreSQL : Relational database
+- class-validator : Request data validation
+- Postman : API testing
+- Docker : Running database and supporting services
 
 Features
 
-Product Management:
+- Three database entities: Product, Employee, and Category
+- PostgreSQL database connection using TypeORM
+- Database schema creation through migrations
+- DTO-based request validation
+- REST API endpoints for creating and retrieving records
+- HTTP 400 Bad Request responses for invalid required fields
+- API testing with Postman
 
-- Create a new product
-- Retrieve all products
-- Retrieve a product by ID
-- Update product information
-- Delete a product
+Database Entities
 
-Employee Management:
+1. Product
 
-- Create a new employee
-- Retrieve all employees
-- Retrieve an employee by ID
-- Update employee information
-- Delete an employee
+- id : Primary key
+- name : Product name
+- category : Product category
+- price : Product price
+- quantity : Available quantity
 
-Database Configuration
+2. Employee
 
-- Database System: PostgreSQL
-- Database Name: user_managament
-- Port: 5432
+- id : Primary key
+- name : Employee name
+- email : Employee email address
+- phone : Employee phone number
+- password : Employee password
+- age : Employee age
+- yearsOfWorking : Years of work experience
 
-PostgreSQL runs in a Docker container. Database credentials and other environment-specific settings are configured through environment variables in the local .env file.
+The email field is unique.
 
-Installation and Setup
+3. Category
 
-Prerequisites:
+- id : Primary key
+- name : Category name
+- description : Category description
 
-Make sure the following tools are installed:
+Setup and Installation
+
+Prerequisites
 
 - Node.js
 - pnpm
-- Docker Desktop
+- PostgreSQL, either locally or through Docker
 - Postman
-- DBeaver (optional, for database inspection)
 
-Setup Instructions:
+1. Install Dependencies
 
-1. Open the project directory.
+Run the following command from the project directory:
 
-2. Install the project dependencies:
+npx pnpm@10 install
 
-   pnpm install
+2. Configure Environment Variables
 
-3. Create a local .env file using .env.example as a reference. Configure the required environment variables.
+Create a .env file using .env.example as a reference. Configure the PostgreSQL connection details and other required environment variables.
 
-4. Start Docker Desktop and ensure that the PostgreSQL container is running.
+Do not commit your actual .env file or expose passwords and secrets.
 
-5. Run the database migrations using the migration command configured in package.json, if required.
+3. Start the Database
 
-6. Start the development server:
+If using the provided Docker Compose configuration, start the required services with:
 
-   pnpm run start:dev
+docker compose up -d
 
-7. The API server will be available at:
+4. Run Database Migrations
 
-   http://localhost:5001
+Execute the migration script configured in package.json:
+
+npx pnpm@10 run migration:run
+
+The migrations create the required database tables for Products, Employees, and Categories.
+
+5. Start the Application
+
+npx pnpm@10 run start:dev
+
+The application runs at:
+
+http://localhost:5001
 
 API Endpoints
 
-Product Endpoints:
-
 - POST /products : Create a product
 - GET /products : Retrieve all products
-- GET /products/:id : Retrieve a product by ID
-- PATCH /products/:id : Update a product
-- DELETE /products/:id : Delete a product
-
-Employee Endpoints:
-
 - POST /employees : Create an employee
 - GET /employees : Retrieve all employees
-- GET /employees/:id : Retrieve an employee by ID
-- PATCH /employees/:id : Update an employee
-- DELETE /employees/:id : Delete an employee
+- POST /categories : Create a category
+- GET /categories : Retrieve all categories
 
-API Testing
+Example API Requests
 
-Product and employee CRUD operations were tested using Postman.
+Create a Product
 
-The following screenshots document the Product API testing process. They are stored in the screenshots/ directory.
+Request:
 
-1. 01-create.png : Create a product
-2. 02-get-all.png : Retrieve all products
-3. 03-get-by-id.png : Retrieve a product by ID
-4. 04-update.png : Update a product
-5. 05-confirm-update.png : Verify the updated product
-6. 06-delete.png : Delete a product
-7. 07-confirm-delete.png : Verify that the deleted product is absent
+POST http://localhost:5001/products
+Content-Type: application/json
 
-Project Structure
+Request Body:
 
-product-management-api/
-|-- src/
-|-- screenshots/
-|   |-- 01-create.png
-|   |-- 02-get-all.png
-|   |-- 03-get-by-id.png
-|   |-- 04-update.png
-|   |-- 05-confirm-update.png
-|   |-- 06-delete.png
-|   |-- 07-confirm-delete.png
-|-- .env.example
-|-- .gitignore
-|-- package.json
-|-- pnpm-lock.yaml
-|-- README.md
+{
+  "name": "Notebook",
+  "category": "Stationery",
+  "price": 50,
+  "quantity": 10
+}
 
-Security
+Create an Employee
 
-Database credentials and other sensitive environment variables are stored in the local .env file. The .env file must not be committed to the repository.
+Request:
 
-Only .env.example, containing placeholder values rather than actual credentials or secrets, should be included in the submission.
+POST http://localhost:5001/employees
+Content-Type: application/json
+
+Request Body:
+
+{
+  "name": "Employee One",
+  "email": "employee@example.com",
+  "phone": "01700000000",
+  "password": "TestPassword123",
+  "age": 25,
+  "yearsOfWorking": 2
+}
+
+Use a unique email address for each employee record.
+
+Create a Category
+
+Request:
+
+POST http://localhost:5001/categories
+Content-Type: application/json
+
+Request Body:
+
+{
+  "name": "Stationery",
+  "description": "Office and school stationery items"
+}
+
+Request Validation
+
+DTOs use the @IsNotEmpty() decorator to validate required fields.
+
+If a required field is empty, the application returns an HTTP 400 Bad Request response.
+
+Validation was tested for all three entities using Postman.
+
+Database Migrations
+
+TypeORM migrations are used to create and manage the database schema.
+
+Migration file:
+
+src/database/migrations/1710000000000-CreateProductsAndEmployees.ts
+
+The migration creates the products, employees, and categories tables. It also defines rollback operations for removing these tables.
+
+Migration history is recorded in the migrations table.
+
+Database Verification
+
+After executing the TypeORM migration, the following tables were verified in the PostgreSQL database:
+
+- products
+- employees
+- categories
+- migrations
+
+The migrations table stores the migration execution history.
+
+Postman Testing
+
+The following tests were performed:
+
+- Create a Product and retrieve product records.
+- Create an Employee and retrieve employee records.
+- Create a Category and retrieve category records.
+- Submit requests with empty required fields.
+- Verify that invalid requests return HTTP 400 Bad Request responses.
+
+Validation Testing Results
+
+- Product : Empty required field : 400 Bad Request
+- Employee : Empty required field : 400 Bad Request
+- Category : Empty required field : 400 Bad Request
+
+All three validation cases were tested successfully.
+
+Screenshots
+
+The screenshots/ directory contains evidence of API testing, including successful POST requests, GET requests, and validation error responses.
+
+The screenshots demonstrate that records can be created, retrieved, and validated through the API.
+
+Conclusion:
+
+This lab assignment demonstrates the implementation of a NestJS backend with TypeORM and PostgreSQL. It covers entity definition, database migrations, REST API development, DTO validation, and API testing using Postman.
